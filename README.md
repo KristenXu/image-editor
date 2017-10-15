@@ -1,7 +1,6 @@
-image-editor
-===
+# image-editor
 
-##About
+## About
 
 An image editor based on canvas, which enables draw shapes, add annotations, crop and some basic image processing
 Including:
