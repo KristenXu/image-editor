@@ -7,11 +7,18 @@
         .area{
             width: 400px;
             height: 400px;
+            border: 1px solid #000;
+
         }
     </style>
 </head>
 <body>
-    <canvas class="area" id="draw_rectangle"></canvas>
+    <select onchange="onShapeChange(this.value)">
+        <option value ="freeline">自由绘线</option>
+        <option value ="rectangle">矩形</option>
+        <option value ="bezierEllipse">椭圆</option>
+    </select>
+    <canvas class="area" width="400" height="400" id="draw_rectangle"></canvas>
     <script src="../../src/drawer/index.js"></script>
     <script src="basic.js"></script>
 </body>

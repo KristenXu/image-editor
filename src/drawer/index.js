@@ -6,7 +6,7 @@
         this.endY = y || 0;
         this.mouseIsDown = 0;
         this.config = config
-        this.drawShape = shapeCreater[config.shapeType]
+        this.drawShape = shapeCreater[config.shapeType || 'freeline']
     }
     Drawer.prototype = {
         init: function (target) {
@@ -24,7 +24,11 @@
 
         },
         clearAll: function () {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        },
 
+        setShapeType: function (shapeType) {
+            this.drawShape = shapeCreater[shapeType || 'freeline']
         },
 
         mouseDown: function(eve) {
@@ -63,7 +67,18 @@
     };
 
     var shapeCreater = {
+        freeline:function () {
+            var x =  this.endX,
+                y =  this.endY;
+            this.context.lineTo(x,y);
+            console.log('x', x)
+            //style
+            this.context.lineWidth = 1;
+            this.context.strokeStyle = 'black';
+            this.context.stroke();
+        },
         rectangle: function() {
+            //core algorithm
             var w = this.endX - this.startX;
             var h = this.endY - this.startY;
             var offsetX = (w < 0) ? w : 0;
@@ -72,12 +87,39 @@
             var height = Math.abs(h);
 
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
             this.context.beginPath();
             this.context.rect(this.startX + offsetX, this.startY + offsetY, width, height);
-            this.context.fillStyle = "yellow";
+            this.context.closePath();
+
+            //style
+            this.context.fillStyle = "rgba(255,255,255,0.2)";
             this.context.fill();
-            this.context.lineWidth = 7;
+            this.context.lineWidth = 1;
+            this.context.strokeStyle = 'black';
+            this.context.stroke();
+        },
+        bezierEllipse: function() {
+            //core algorithm
+            var k = .5522848,
+                x =  this.endX,
+                y =  this.endY,
+                a = this.endX - this.startX,
+                b = this.endY - this.startY,
+                ox = a * k, // 水平控制点偏移量
+                oy = b * k; // 垂直控制点偏移量
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.context.beginPath();
+            //从椭圆的左端点开始顺时针绘制四条三次贝塞尔曲线
+            this.context.moveTo(x - a, y);
+            this.context.bezierCurveTo(x - a, y - oy, x - ox, y - b, x, y - b);
+            this.context.bezierCurveTo(x + ox, y - b, x + a, y - oy, x + a, y);
+            this.context.bezierCurveTo(x + a, y + oy, x + ox, y + b, x, y + b);
+            this.context.bezierCurveTo(x - ox, y + b, x - a, y + oy, x - a, y);
+            this.context.closePath();
+            //style
+            this.context.fillStyle = "rgba(255,255,255,0.2)";
+            this.context.fill();
+            this.context.lineWidth = 1;
             this.context.strokeStyle = 'black';
             this.context.stroke();
         }
