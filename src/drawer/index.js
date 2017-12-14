@@ -63,7 +63,13 @@
                 x: evt.clientX - rect.left,
                 y: evt.clientY - rect.top
             };
-        }
+        },
+        zoomIn: function () {
+
+        },
+        zoomOut: function () {
+
+        },
     };
 
     var shapeCreater = {
@@ -122,6 +128,23 @@
             this.context.lineWidth = 1;
             this.context.strokeStyle = 'black';
             this.context.stroke();
+        },
+        circle: function (context, x, y, w, h, color, lineWidth) {
+            context = this.context;
+            x =  this.startX;
+            y =  this.startY;
+            w = this.endX - this.startX;
+            h = this.endY - this.startY;
+            color = 'rgba(255, 0, 0, 1)';
+            lineWidth = 1;
+            var radius = Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2))
+
+            context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            context.beginPath();
+            context.strokeStyle = color;
+            context.lineWidth = lineWidth;
+            context.arc(x, y, radius, 0, 2 * Math.PI);
+            context.stroke();
         }
     }
     window.Drawer = Drawer
