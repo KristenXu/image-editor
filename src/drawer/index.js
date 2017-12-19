@@ -73,6 +73,13 @@
         zoomOut: function () {
 
         },
+        setStyle: function () {
+            this.context.fillStyle = "rgba(255,255,255,0.2)";
+            this.context.fill();
+            this.context.lineWidth = 1;
+            this.context.strokeStyle = 'black';
+            this.context.stroke();
+        }
     };
 
     var shapeCreater = {
@@ -82,9 +89,7 @@
             this.context.lineTo(x,y);
             console.log('x', x)
             //style
-            this.context.lineWidth = 1;
-            this.context.strokeStyle = 'black';
-            this.context.stroke();
+            this.setStyle()
         },
         rectangle: function() {
             //core algorithm
@@ -101,11 +106,7 @@
             this.context.closePath();
 
             //style
-            this.context.fillStyle = "rgba(255,255,255,0.2)";
-            this.context.fill();
-            this.context.lineWidth = 1;
-            this.context.strokeStyle = 'black';
-            this.context.stroke();
+            this.setStyle()
         },
         getAngleByTan: function (ratio) {
             var angle = Math.atan(Math.abs(ratio)) * 180 / Math.PI;
@@ -126,11 +127,37 @@
                 angle = Math.atan(b/a);
             this.context.ellipse(centerX, centerY, radiusX, radiusY, angle, 0, 2 * Math.PI);
             //style
-            this.context.fillStyle = "rgba(255,255,255,0.2)";
-            this.context.fill();
-            this.context.lineWidth = 1;
-            this.context.strokeStyle = 'black';
-            this.context.stroke();
+            this.setStyle()
+        },
+        bezierObliqueEllipse: function () {
+            //core algorithm
+            var k = .5522848,
+                x =  this.endX,
+                y =  this.endY,
+                a = this.endX - this.startX,
+                b = this.endY - this.startY,
+                ox = a * k, // 水平控制点偏移量
+                oy = b * k; // 垂直控制点偏移量
+            var angle = Math.atan(b/a);
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.context.save()
+            this.context.translate(x - a/2,y - b/2);
+            this.context.rotate(angle)
+            this.context.translate(-(x - a/2), -(y - b/2));
+
+            this.context.beginPath();
+            //从椭圆的左端点开始顺时针绘制四条三次贝塞尔曲线
+            this.context.moveTo(x - a, y);
+            this.context.bezierCurveTo(x - a, y - oy, x - ox, y - b, x, y - b);
+            this.context.bezierCurveTo(x + ox, y - b, x + a, y - oy, x + a, y);
+            this.context.bezierCurveTo(x + a, y + oy, x + ox, y + b, x, y + b);
+            this.context.bezierCurveTo(x - ox, y + b, x - a, y + oy, x - a, y);
+            this.context.closePath();
+            //style
+            this.setStyle()
+
+            this.context.restore()
+
         },
         bezierEllipse: function() {
             //core algorithm
@@ -142,9 +169,6 @@
                 ox = a * k, // 水平控制点偏移量
                 oy = b * k; // 垂直控制点偏移量
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            // this.context.save()
-            // this.context.translate(x - a/2,y - b/2);
-            // this.context.rotate(45 * Math.PI / 180)
 
             this.context.beginPath();
             //从椭圆的左端点开始顺时针绘制四条三次贝塞尔曲线
@@ -155,13 +179,8 @@
             this.context.bezierCurveTo(x - ox, y + b, x - a, y + oy, x - a, y);
             this.context.closePath();
             //style
-            this.context.fillStyle = "rgba(255,255,255,0.2)";
-            this.context.fill();
-            this.context.lineWidth = 1;
-            this.context.strokeStyle = 'black';
-            this.context.stroke();
+            this.setStyle()
 
-            // this.context.restore()
         },
         circle: function (context, x, y, w, h, color, lineWidth) {
             context = this.context;
@@ -189,7 +208,7 @@
             context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             context.beginPath();
             context.arc(this.startX + xr*radius, this.startY + yr*radius, radius, 0, 2 * Math.PI);
-            context.stroke();
+            this.setStyle()
         }
     }
     window.Drawer = Drawer
