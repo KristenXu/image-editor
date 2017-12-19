@@ -17,6 +17,9 @@
             this.canvas.addEventListener("mouseup", this.mouseUp.bind(this), false);
 
         },
+        rotate: function () {
+            this.context.rotate(45 * Math.PI / 180)
+        },
         draw: function () {
 
         },
@@ -104,6 +107,31 @@
             this.context.strokeStyle = 'black';
             this.context.stroke();
         },
+        getAngleByTan: function (ratio) {
+            var angle = Math.atan(Math.abs(ratio)) * 180 / Math.PI;
+            return angle
+        },
+        obliqueEllipse: function () {
+
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.context.beginPath();
+            var x =  this.endX,
+                y =  this.endY,
+                a = this.endX - this.startX,
+                b = this.endY - this.startY,
+                centerX = x - a/2,
+                centerY = y - b/2,
+                radiusX = Math.abs(a/2),
+                radiusY = Math.abs(b/2),
+                angle = Math.atan(b/a);
+            this.context.ellipse(centerX, centerY, radiusX, radiusY, angle, 0, 2 * Math.PI);
+            //style
+            this.context.fillStyle = "rgba(255,255,255,0.2)";
+            this.context.fill();
+            this.context.lineWidth = 1;
+            this.context.strokeStyle = 'black';
+            this.context.stroke();
+        },
         bezierEllipse: function() {
             //core algorithm
             var k = .5522848,
@@ -114,6 +142,10 @@
                 ox = a * k, // 水平控制点偏移量
                 oy = b * k; // 垂直控制点偏移量
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            // this.context.save()
+            // this.context.translate(x - a/2,y - b/2);
+            // this.context.rotate(45 * Math.PI / 180)
+
             this.context.beginPath();
             //从椭圆的左端点开始顺时针绘制四条三次贝塞尔曲线
             this.context.moveTo(x - a, y);
@@ -128,22 +160,35 @@
             this.context.lineWidth = 1;
             this.context.strokeStyle = 'black';
             this.context.stroke();
+
+            // this.context.restore()
         },
         circle: function (context, x, y, w, h, color, lineWidth) {
             context = this.context;
-            x =  this.startX;
-            y =  this.startY;
-            w = this.endX - this.startX;
-            h = this.endY - this.startY;
-            color = 'rgba(255, 0, 0, 1)';
-            lineWidth = 1;
-            var radius = Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2))
+            // x =  this.startX;
+            // y =  this.startY;
+            // w = this.endX - this.startX;
+            // h = this.endY - this.startY;
+            // color = 'rgba(255, 0, 0, 1)';
+            // lineWidth = 1;
+            // var radius = Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2))
+            //
+            // context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            // context.beginPath();
+            // context.strokeStyle = color;
+            // context.lineWidth = lineWidth;
+            // context.arc(x, y, radius, 0, 2 * Math.PI);
+            // context.stroke();
 
+            var w = Math.abs(this.startX - this.endX),
+                h = Math.abs(this.startY - this.endY);
+            var xr, yr;
+            var radius = Math.min(w/2, h/2)
+            xr = this.endX > this.startX ? 1 : -1
+            yr = this.endY > this.startY ? 1 : -1
             context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             context.beginPath();
-            context.strokeStyle = color;
-            context.lineWidth = lineWidth;
-            context.arc(x, y, radius, 0, 2 * Math.PI);
+            context.arc(this.startX + xr*radius, this.startY + yr*radius, radius, 0, 2 * Math.PI);
             context.stroke();
         }
     }
